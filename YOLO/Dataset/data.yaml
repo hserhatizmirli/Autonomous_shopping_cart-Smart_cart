@@ -1,6 +1,6 @@
-train: D:/YOLO/Dataset/train/images
-val: D:/YOLO/Dataset/valid/images
-test: D:/YOLO/Dataset/test/images
+train: D:\YOLO\Dataset\train\images
+val: D:\YOLO\Dataset\valid\images
+test: D:\YOLO\Dataset\test\images
 
-nc: 3
-names: ['pen', 'pencil', 'signature pen']
+nc: 17
+names: ['60_sayfa_gipta_defter', '80_sayfa_gipta_defter', 'beypazari_maden_suyu', 'cafex_kahve', 'centro_gofret', 'citkirildim_cubuk_kraker', 'eti_crax_cubuk_kraker', 'eti_hosbes_gofret', 'kizilay_maden_suyu', 'mahmood_kahve', 'nazar_damla_sakizli_sakiz', 'nazar_naneli_sakiz', 'pensan_mavi_tukenmez_kalem', 'pensan_siyah_tukenmez_kalem', 'susse_biskuvi', 'torku_nobir_gofret', 'ulker_cokoprens_biskuvi']
