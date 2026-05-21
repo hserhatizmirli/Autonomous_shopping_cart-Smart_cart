@@ -5,19 +5,21 @@ from multiprocessing import freeze_support
 
 def model_train(model):
     model.train(
-        data="D:/YOLO/Dataset/data.yaml",
-        epochs=300,
+        data="C:/Users/Esat Akküncü/Downloads/Kasiyersiz-Ak-ll-Al-veri-Sepeti-main/YOLO/Dataset/data.yaml",
+        epochs=250,
         name='yolo11',
-        project='D:/YOLO/runs/detect',
+        project='C:/Users/Esat Akküncü/Downloads/Kasiyersiz-Ak-ll-Al-veri-Sepeti-main/YOLO/runs/detect/', 
         exist_ok=True,  
-        batch=8,
-        workers=0,
-        device=0,
-        amp=False
+        batch=16,
+        workers=8,
+        device=0, 
+        amp=True,        
+        imgsz=640,       
+        cache=True
     )
 
 def kamera():
-    best_pt = 'D:/YOLO/runs/detect/yolo11/weights/best.pt'
+    best_pt = 'C:/Users/Esat Akküncü/Downloads/Kasiyersiz-Ak-ll-Al-veri-Sepeti-main/YOLO/runs/detect/yolo11/weights/best.pt'
     
     if not os.path.exists(best_pt):
         print("[✗] Eğitilmiş model bulunamadı!")
@@ -27,7 +29,7 @@ def kamera():
     print(f"[✓] Model yüklendi: {model.names}")
     
     cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)   # Çözünürlüğü düşür (hız için)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)   
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
     
     if not cap.isOpened():
@@ -70,6 +72,6 @@ def kamera():
 
 if __name__ == '__main__':
     freeze_support()
-    model = YOLO('D:/YOLO/runs/detect/yolo11/weights/best.pt')
+    model = YOLO('C:/Users/Esat Akküncü/Downloads/Kasiyersiz-Ak-ll-Al-veri-Sepeti-main/YOLO/runs/detect/yolo11/weights/best.pt')
     model_train(model)
-    kamera()
+    #kamera()
