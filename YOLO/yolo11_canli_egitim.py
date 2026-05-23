@@ -5,10 +5,10 @@ from multiprocessing import freeze_support
 
 def model_train(model):
     model.train(
-        data="C:/Users/Esat Akküncü/Downloads/Kasiyersiz-Ak-ll-Al-veri-Sepeti-main/YOLO/Dataset/data.yaml",
+        data="D:/git/Kasiyersiz-Ak-ll-Al-veri-Sepeti/YOLO/Dataset/data.yaml",
         epochs=250,
         name='yolo11',
-        project='C:/Users/Esat Akküncü/Downloads/Kasiyersiz-Ak-ll-Al-veri-Sepeti-main/YOLO/runs/detect/', 
+        project='D:/git/Kasiyersiz-Ak-ll-Al-veri-Sepeti/YOLO/runs/detect/', 
         exist_ok=True,  
         batch=16,
         workers=8,
@@ -19,25 +19,25 @@ def model_train(model):
     )
 
 def kamera():
-    best_pt = 'C:/Users/Esat Akküncü/Downloads/Kasiyersiz-Ak-ll-Al-veri-Sepeti-main/YOLO/runs/detect/yolo11/weights/best.pt'
+    best_pt = 'D:/git/Kasiyersiz-Ak-ll-Al-veri-Sepeti/YOLO/runs/detect/yolo11/weights/best.pt'
     
     if not os.path.exists(best_pt):
-        print("[✗] Eğitilmiş model bulunamadı!")
+        print("Eğitilmiş model bulunamadı!")
         return
     
     model = YOLO(best_pt)
-    print(f"[✓] Model yüklendi: {model.names}")
+    print(f"Model yüklendi: {model.names}")
     
     cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)   
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
     
     if not cap.isOpened():
-        print("[✗] Kamera açılamadı!")
+        print(" Kamera açılamadı!")
         return
 
-    print("[✓] Kamera çalışıyor. Çıkmak için 'q'")
-    print("[✓] Ayarlar: conf=0.85, iou=0.3 (hassasiyet artırıldı)")
+    print("Kamera çalışıyor. Çıkmak için 'q'")
+    print("Ayarlar: conf=0.85, iou=0.3 (hassasiyet artırıldı)")
     
     while True:
         ret, frame = cap.read()
@@ -72,6 +72,6 @@ def kamera():
 
 if __name__ == '__main__':
     freeze_support()
-    model = YOLO('C:/Users/Esat Akküncü/Downloads/Kasiyersiz-Ak-ll-Al-veri-Sepeti-main/YOLO/runs/detect/yolo11/weights/best.pt')
-    model_train(model)
-    #kamera()
+    model = YOLO('D:/git/Kasiyersiz-Ak-ll-Al-veri-Sepeti/YOLO/runs/detect/yolo11/weights/best.pt')
+    #model_train(model)
+    kamera()
