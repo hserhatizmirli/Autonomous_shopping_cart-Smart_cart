@@ -1,18 +1,18 @@
 task: detect
 mode: train
-model: C:/Users/Esat Akküncü/Downloads/Kasiyersiz-Ak-ll-Al-veri-Sepeti-main/YOLO/runs/detect/yolo11/weights/best.pt
-data: C:/Users/Esat Akküncü/Downloads/Kasiyersiz-Ak-ll-Al-veri-Sepeti-main/YOLO/Dataset/data.yaml
+model: D:/git/Kasiyersiz-Ak-ll-Al-veri-Sepeti/YOLO/runs/detect/yolo11/weights/best.pt
+data: D:/git/Kasiyersiz-Ak-ll-Al-veri-Sepeti/YOLO/Dataset/data.yaml
 epochs: 250
 time: null
 patience: 100
-batch: 16
+batch: 8
 imgsz: 640
 save: true
 save_period: -1
-cache: true
+cache: false
 device: '0'
-workers: 8
-project: C:/Users/Esat Akküncü/Downloads/Kasiyersiz-Ak-ll-Al-veri-Sepeti-main/YOLO/runs/detect/
+workers: 0
+project: D:/git/Kasiyersiz-Ak-ll-Al-veri-Sepeti/YOLO/runs/detect/
 name: yolo11
 exist_ok: true
 pretrained: true
@@ -25,7 +25,7 @@ rect: false
 cos_lr: false
 close_mosaic: 10
 resume: false
-amp: true
+amp: false
 fraction: 1.0
 profile: false
 freeze: null
@@ -80,7 +80,6 @@ warmup_momentum: 0.8
 warmup_bias_lr: 0.1
 box: 7.5
 cls: 0.5
-cls_pw: 0.0
 dfl: 1.5
 pose: 12.0
 kobj: 1.0
@@ -107,4 +106,4 @@ auto_augment: randaugment
 erasing: 0.4
 cfg: null
 tracker: botsort.yaml
-save_dir: C:\Users\Esat Akküncü\Downloads\Kasiyersiz-Ak-ll-Al-veri-Sepeti-main\YOLO\runs\detect\yolo11
+save_dir: D:\git\Kasiyersiz-Ak-ll-Al-veri-Sepeti\YOLO\runs\detect\yolo11

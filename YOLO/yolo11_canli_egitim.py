@@ -10,12 +10,10 @@ def model_train(model):
         name='yolo11',
         project='D:/git/Kasiyersiz-Ak-ll-Al-veri-Sepeti/YOLO/runs/detect/', 
         exist_ok=True,  
-        batch=16,
-        workers=8,
+        batch=8,
+        workers=0,
         device=0, 
-        amp=True,        
-        imgsz=640,       
-        cache=True
+        amp=False 
     )
 
 def kamera():
@@ -73,5 +71,5 @@ def kamera():
 if __name__ == '__main__':
     freeze_support()
     model = YOLO('D:/git/Kasiyersiz-Ak-ll-Al-veri-Sepeti/YOLO/runs/detect/yolo11/weights/best.pt')
-    #model_train(model)
-    kamera()
+    model_train(model)
+    #kamera()
