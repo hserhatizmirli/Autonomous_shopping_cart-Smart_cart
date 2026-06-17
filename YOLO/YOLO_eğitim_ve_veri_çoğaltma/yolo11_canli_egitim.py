@@ -26,7 +26,7 @@ def kamera():
     model = YOLO(best_pt)
     print(f"Model yüklendi: {model.names}")
     
-    cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+    cap = cv2.VideoCapture(1, cv2.CAP_DSHOW)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)   
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
     
@@ -51,7 +51,7 @@ def kamera():
             verbose=False
         ) 
         
-        annotated_frame = results[0].plot()
+        annotated_frame = results[1].plot()
         cv2.imshow('YOLO Takip', annotated_frame)
         
         # Tespitleri yazdır (debug için)
@@ -71,5 +71,5 @@ def kamera():
 if __name__ == '__main__':
     freeze_support()
     model = YOLO('D:/git/Kasiyersiz-Ak-ll-Al-veri-Sepeti/YOLO/runs/detect/yolo11/weights/best.pt')
-    model_train(model)
-    #kamera()
+    #model_train(model)
+    kamera()
