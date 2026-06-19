@@ -5,10 +5,10 @@ from multiprocessing import freeze_support
 
 def model_train(model):
     model.train(
-        data="D:/git/Kasiyersiz-Ak-ll-Al-veri-Sepeti/YOLO/Dataset/data.yaml",
+        data=r'/Smart shopping cart/Dataset/data.yaml', # Veri seti dosyasının yolu (hata alırsanız tam yolu gireiblirsiniz.) / The path to the dataset file (if you get an error, you can enter the full path.)
         epochs=250,
         name='yolo11',
-        project='D:/git/Kasiyersiz-Ak-ll-Al-veri-Sepeti/YOLO/runs/detect/', 
+        project=r'/Smart shopping cart/runs/detect/', # Modelin kaydedileceği klasör (hata alırsanız tam yolu gireiblirsiniz.) / The folder where the model will be saved (if you get an error, you can enter the full path.)
         exist_ok=True,  
         batch=8,
         workers=0,
@@ -17,7 +17,7 @@ def model_train(model):
     )
 
 def kamera():
-    best_pt = 'D:/git/Kasiyersiz-Ak-ll-Al-veri-Sepeti/YOLO/runs/detect/yolo11/weights/best.pt'
+    best_pt = r'/Smart shopping cart/YOLO/runs/detect/yolo11/weights/best.pt' # Eğitilmiş modelin yolu (hata alırsanız tam yolu gireiblirsiniz.) / The path to the trained model (if you get an error, you can enter the full path.)
     
     if not os.path.exists(best_pt):
         print("Eğitilmiş model bulunamadı!")
@@ -45,8 +45,8 @@ def kamera():
         results = model.track(
             frame, 
             persist=True, 
-            conf=0.70,      # Sadece %60'ten emin olduklarını göster
-            iou=0.3,        # Çakışma eşiğini düşür (aynı nesneye 2 label gelmesini engeller)
+            conf=0.70,      # Sadece %70'ten emin olduklarını göster / Only show detections with confidence >= 70%
+            iou=0.3,        # Çakışma eşiğini düşür (aynı nesneye 2 label gelmesini engeller) / Lower the IoU threshold to avoid multiple labels for the same object
             tracker="bytetrack.yaml",
             verbose=False
         ) 
@@ -70,6 +70,8 @@ def kamera():
 
 if __name__ == '__main__':
     freeze_support()
-    model = YOLO('D:/git/Kasiyersiz-Ak-ll-Al-veri-Sepeti/YOLO/runs/detect/yolo11/weights/best.pt')
-    #model_train(model)
-    kamera()
+    # 
+    model = YOLO(r'/Smart shopping cart/YOLO/runs/detect/yolo11/weights/best.pt') 
+    # sadece birini kullanmak için yorum satırlarını açıp kapatabilirsiniz / Uncomment one of the following lines to use either training or camera
+    model_train(model)  # Eğitimi başlat / Start training 
+    kamera() # Kamerayı başlat / Start the camera

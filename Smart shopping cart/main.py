@@ -7,13 +7,13 @@ from multiprocessing import freeze_support
 from flask import Flask, render_template, request, jsonify, Response
 import iyzipay
 
-# Senin modüllerin
+# Kendi kodlarımızın modülleri / Our own code modules
 from yolo import YoloAnalyzer  
 from tarti import ScaleReader
 from barkod1 import barkod_oku
 
 # =================================================================
-# 1. VERİTABANLARI VE AYARLAR
+# 1. VERİTABANLARI VE AYARLAR / DATABASES AND SETTINGS
 # =================================================================
 
 DATABASE = {
@@ -59,13 +59,14 @@ BARKOD_DATABASE = {
 }
 
 # =================================================================
-# 2. FLASK SUNUCUSU VE GLOBAL DEĞİŞKENLER
+# 2. FLASK SUNUCUSU VE GLOBAL DEĞİŞKENLER / FLASK SERVER AND GLOBAL VARIABLES
 # =================================================================
 app = Flask(__name__)
 
+# kendi ödeme api ve secret keylerinizi girin. / Enter your own payment API and secret keys.
 options = {
-    'api_key': 'sandbox-OcfP6a6SMhF7mSTajGdOglfgA6YnyvOf',
-    'secret_key': 'sandbox-Nprw1bJ2eYRJtd79DtQ9cl1Uc78j4lhv',
+    'api_key': 'sandbox-OcfP6a',
+    'secret_key': 'sandbox-Nprw1b',
     'base_url': 'sandbox-api.iyzipay.com'
 }
 
@@ -79,14 +80,16 @@ BOS_KARE_SAYACI = 0
 SON_EKLENME_ZAMANI = 0.0 
 
 # =================================================================
-# 3. YARDIMCI FONKSİYONLAR
+# 3. YARDIMCI FONKSİYONLAR / HELPER FUNCTIONS
 # =================================================================
-def tarti_tetiklendi(stable_weight):
+# Tartı sabit bir ağırlık verdiğinde çağrılacak geri çağırma fonksiyonu. / Callback function for when the scale provides a stable weight
+def tarti_tetiklendi(stable_weight):  
     global YENI_TARTI_VERISI
     if SISTEM_MODU == "YOLO_TARTI":
         YENI_TARTI_VERISI = stable_weight
 
-def sepete_urun_ekle(sistem_id):
+# Sepete ürün ekleyen fonksiyon. / Function to add a product to the cart
+def sepete_urun_ekle(sistem_id): 
     ad = DISPLAY_NAMES.get(sistem_id, sistem_id)
     fiyat = PRICE_DATABASE.get(sistem_id, 0.0)
     
@@ -99,21 +102,21 @@ def sepete_urun_ekle(sistem_id):
     print(f"🛒 [WEB] SEPETE EKLENDİ: {ad} (x{anlik_sepet[sistem_id]['adet']})")
     print("*"*50 + "\n")
 
-# [ÇÖZÜM]: Format ne olursa olsun çökmeyen zırhlı değerlendirme fonksiyonu
+# Ürünü ağırlık ve tespitler ile sessizce değerlendirir. / Silently evaluates the product based on weight and detections
 def urunu_degerlendir_sessiz(agirlik, tespitler):
     if not tespitler: 
         return False, None
 
-    # 1. DURUM: yolo.py sadece tek bir metin (string) döndürüyorsa (Örn: "kizilay_maden_suyu")
+    # 1. DURUM: yolo.py sadece tek bir metin (string) döndürüyorsa (Örn: "kizilay_maden_suyu") / If yolo.py returns only a single text (string)
     if isinstance(tespitler, str):
         beklenen = DATABASE.get(tespitler, 0.0)
         if beklenen > 0 and abs(beklenen - agirlik) <= 2.0:
             return True, tespitler
         return False, None
 
-    # 2. DURUM: yolo.py bir liste döndürüyorsa
+    # 2. DURUM: yolo.py bir liste döndürüyorsa / If yolo.py returns a list
     if isinstance(tespitler, list) and len(tespitler) > 0:
-        # 2A: Liste içi sözlükse (Örn: [{'name': 'kizilay', 'conf': 0.9}])
+        # 2A: Liste içi sözlükse (Örn: [{'name': 'kizilay', 'conf': 0.9}]) / If the list contains dictionaries
         if isinstance(tespitler[0], dict):
             en_iyi_isim = tespitler[0].get('name', '')
             en_iyi_guven = tespitler[0].get('conf', 0.0)
@@ -129,7 +132,7 @@ def urunu_degerlendir_sessiz(agirlik, tespitler):
                     return True, aday_isim
             return False, None
 
-        # 2B: Liste içi düz metinse (Örn: ['kizilay', 'beypazari'])
+        # 2B: Liste içi düz metinse (Örn: ['kizilay', 'beypazari']) / If the list contains plain strings
         elif isinstance(tespitler[0], str):
             for aday_isim in tespitler[:3]:
                 beklenen = DATABASE.get(aday_isim, 0.0)
@@ -137,32 +140,37 @@ def urunu_degerlendir_sessiz(agirlik, tespitler):
                     return True, aday_isim
             return False, None
 
-    # Eğer tanınamayan bir format gelirse çökme, pas geç
+    # Eğer tanınamayan bir format gelirse pas geç / If an unrecognized format is received, skip
     return False, None
 
 # =================================================================
-# 4. ARKA PLAN KAMERA VE YOLO DÖNGÜSÜ
+# 4. ARKA PLAN KAMERA VE YOLO DÖNGÜSÜ / BACKGROUND CAMERA AND YOLO LOOP
 # =================================================================
+# Donanım döngüsünü başlatan fonksiyon. / Function to start the hardware loop
 def donanim_dongusu_baslat():
     global YENI_TARTI_VERISI, SISTEM_MODU, latest_frame, SON_ISLENEN_AGIRLIK, BOS_KARE_SAYACI, SON_EKLENME_ZAMANI
     
     print("[1] Donanımlar Başlatılıyor...")
-    model_path = "D:/AKILLI TARTI/mühendislik projesi/runs/detect/yolo11/weights/best.pt"
+    # model yolunda eğer hata alırsanız tam halini yazın. / If you get an error in the model path, write the full path.
+    model_path = r"/Smart shopping cart/runs/detect/yolo11/weights/best.pt"
     
     try:
         yolo_analyzer = YoloAnalyzer(model_path)
     except Exception as e:
         print(f"YOLO Modeli Yüklenemedi: {e}")
         return
-        
+    
+    # Tartı bağlantısını başlatıyoruz. Aygıt yöneticisinden tartının bağlı olan portunu girin. Örneğin: 'COM6' / We start the scale connection. Enter the port to which the scale is connected from the device manager. For example: 'COM6'
     tarti = ScaleReader(port='COM5', baudrate=115200, on_stable_callback=tarti_tetiklendi)
     tarti.start()
     
+    # Kamera başlatıyoruz. / Starting the camera
     cap = cv2.VideoCapture(1)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
     cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
 
+    # Eğer kamera açılamadıysa veya YOLO modeli yüklenemediyse hata veriyoruz. / If the camera cannot be opened or the YOLO model cannot be loaded, we give an error.
     if not cap.isOpened() or getattr(yolo_analyzer, 'model', None) is None:
         print("[✗] Donanımlar başlatılamadı! Kamerayı kontrol et.")
         return
@@ -196,13 +204,13 @@ def donanim_dongusu_baslat():
                         continue
 
                 if DEGERLENDIRME_BASLANGICI is None:
-                    print(f"⚖️ TARTI ONAYI GELDİ: {YENI_TARTI_VERISI}g. Analiz ediliyor (10 Saniye)...")
+                    print(f" TARTI ONAYI GELDİ: {YENI_TARTI_VERISI}g. Analiz ediliyor (10 Saniye)...")
                     DEGERLENDIRME_BASLANGICI = time.time()
                 
                 basarili_mi, tespit_edilen = urunu_degerlendir_sessiz(YENI_TARTI_VERISI, LATEST_DETECTIONS)
                 
                 if basarili_mi:
-                    print(f"✅ ÜRÜN TANINDI: {tespit_edilen}")
+                    print(f"ÜRÜN TANINDI: {tespit_edilen}")
                     sepete_urun_ekle(tespit_edilen)
                     
                     SON_ISLENEN_AGIRLIK = YENI_TARTI_VERISI
@@ -211,8 +219,8 @@ def donanim_dongusu_baslat():
                     DEGERLENDIRME_BASLANGICI = None
                 else:
                     if time.time() - DEGERLENDIRME_BASLANGICI >= 10.0:
-                        print("❌ 10 Saniye doldu! Ürün tam teşhis edilemedi.")
-                        print("🔄 BARKOD MODUNA GEÇİLİYOR. Lütfen ürünü okutunuz.")
+                        print("10 Saniye doldu! Ürün tam teşhis edilemedi.")
+                        print("BARKOD MODUNA GEÇİLİYOR. Lütfen ürünü okutunuz.")
                         SISTEM_MODU = "BARKOD"
                         YENI_TARTI_VERISI = None
                         DEGERLENDIRME_BASLANGICI = None
@@ -226,11 +234,11 @@ def donanim_dongusu_baslat():
                 for barkod_verisi in bulunan_barkodlar:
                     urun_id = BARKOD_DATABASE.get(barkod_verisi, "bilinmeyen")
                     if urun_id != "bilinmeyen":
-                        print(f"✅ BARKOD YAKALANDI: {barkod_verisi}")
+                        print(f"BARKOD YAKALANDI: {barkod_verisi}")
                         sepete_urun_ekle(urun_id)
                         SON_EKLENME_ZAMANI = time.time()
                         
-                        print("🔄 Otomatik Moda (YOLO) geri dönülüyor...")
+                        print("Otomatik Moda (YOLO) geri dönülüyor...")
                         SISTEM_MODU = "YOLO_TARTI"
                         time.sleep(1.5)
                         break
@@ -242,7 +250,7 @@ def donanim_dongusu_baslat():
         time.sleep(0.03) 
 
 # =================================================================
-# 5. FLASK (WEB ARAYÜZÜ) YÖNLENDİRMELERİ
+# 5. FLASK (WEB ARAYÜZÜ) YÖNLENDİRMELERİ / FLASK (WEB INTERFACE) ROUTES
 # =================================================================
 
 @app.route('/')
@@ -348,6 +356,7 @@ def odeme_yap():
         ]
     }
 
+    # Iyzipay ödeme isteğini gönderiyoruz ve yanıtı işliyoruz. / We send the Iyzipay payment request and process the response.
     try:
         yanit = iyzipay.Payment().create(istek, options)
         

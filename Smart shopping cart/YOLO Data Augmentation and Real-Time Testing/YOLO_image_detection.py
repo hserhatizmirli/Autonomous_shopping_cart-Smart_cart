@@ -3,8 +3,9 @@ import os
 from ultralytics import YOLO
 
 def analyze_my_image_small():
-    # Model yükleme
-    model_path = 'D:/YOLO/runs/detect/yolo11/weights/best.pt'
+    # Model yükleme / Load the model
+    # modelin tam yolunu girebilirsiniz. Örn: r'C:\path\to\your\model.pt' / You can enter the full path of the model. E.g.: r'C:\path\to\your\model.pt'
+    model_path = r'\Smart shopping cart\runs\detect\yolo11\weights\best.pt'
     
     if not os.path.exists(model_path):
         print(f"[✗] Model bulunamadı, pretrained kullanılıyor...")
@@ -12,31 +13,31 @@ def analyze_my_image_small():
     else:
         model = YOLO(model_path)
     
-    # Fotoğraf yolu
-    image_path = r'D:\indir\WhatsApp Image 2026-04-25 at 11.41.35.jpeg'
+    # Fotoğraf yolunu kendi sisteminizdeki gibi ayarlayın / Set the photo path as you would in your own system.
+    image_path = r'D:\indir\image.jpeg'
     
     if not os.path.exists(image_path):
         print(f"[✗] Fotoğraf bulunamadı!")
         return
     
-    # Fotoğrafı küçük boyutta oku
+    # Fotoğrafı küçük boyutta oku / Read the photo in small size
     image = cv2.imread(image_path)
     if image is None:
         print("[✗] Fotoğraf okunamadı!")
         return
     
-    # Önce küçült, sonra analiz et (daha hızlı)
+    # Önce küçült, sonra analiz et (daha hızlı) / First resize, then analyze (faster)
     small_image = cv2.resize(image, (640, 480))
     
     print("[✓] Fotoğraf analiz ediliyor (640x480)...")
     
-    # Küçültülmüş görüntüde detection yap
+    # Küçültülmüş görüntüde detection yap  / Perform detection on the resized image
     results = model(small_image, conf=0.70, iou=0.3)
     
-    # Sonucu çiz
+    # Sonucu çiz / Draw the result
     annotated_image = results[0].plot()
     
-    # Tespitleri yazdır
+    # Tespitleri yazdır / Print the detections
     if results[0].boxes is not None:
         print(f"\n{'='*40}")
         print(f"TESPİT EDİLEN NESNELER:")
@@ -50,7 +51,7 @@ def analyze_my_image_small():
     else:
         print("[!] Nesne tespit edilmedi!")
     
-    # Göster
+    # Göster ve kaydetme seçenekleri / Show and save options
     cv2.imshow('Detection Result', annotated_image)
     print("\nÇıkmak için 'q' veya 'ESC'")
     print("Kaydetmek için 's'")

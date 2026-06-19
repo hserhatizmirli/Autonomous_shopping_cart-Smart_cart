@@ -4,27 +4,27 @@ import glob
 import random
 import shutil
 
-# Klasör Yolları
-source_dir = 'C:\\Users\\hsisec\\Desktop\\foto'
-target_dir = 'C:\\Users\\hsisec\\Desktop\\aug_foto'
+# saf verilerin ve yeni oluşacak veri çoğaltımı klasörlerinin yolları / The paths to the original data and augmented data folders
+source_dir = r'\Smart shopping cart\YOLO Data Augmentation and Real-Time Testing\raw data'
+target_dir = r'\Smart shopping cart\YOLO Data Augmentation and Real-Time Testing\Aug data'
 
-# --- TEMİZLİK: Hedef klasör varsa sil ve yeniden oluştur (Eski dosya kalmasın) ---
+# --- TEMİZLİK: Hedef klasör varsa sil ve yeniden oluştur / Clean: If target folder exists, delete and recreate it ---
 if os.path.exists(target_dir):
     shutil.rmtree(target_dir)
 os.makedirs(target_dir, exist_ok=True)
 
-# Resimleri Bul
+# Resimleri Bul / Find images
 resim_uzantilari = ['*.jpg', '*.jpeg', '*.png', '*.JPG', '*.JPEG', '*.PNG']
 resim_listesi = []
 for uzanti in resim_uzantilari:
     resim_listesi.extend(glob.glob(os.path.join(source_dir, uzanti)))
 
-# Aynı dosyanın listede iki kez olmasını engelle (Mükerrer kontrolü)
+# Aynı dosyanın listede iki kez olmasını engelle / Prevent the same file from appearing twice in the list
 resim_listesi = list(set(resim_listesi))
 
 print(f"Kaynak klasördeki net orijinal resim sayısı: {len(resim_listesi)}")
 
-# ---------- AYARLAR ----------
+# ---------- AYARLAR / SETTINGS ----------
 target_size = (640, 640)
 dark_factor = 0.28
 bright_factor = 0.28
@@ -66,19 +66,19 @@ sayac = 0
 for img_path in resim_listesi:
     base_name = os.path.basename(img_path)
     
-    # Orijinal resmi yükle
+    # Orijinal resmi yükle / Load the original image
     img = tf.keras.utils.load_img(img_path, target_size=target_size)
     original_array = tf.keras.utils.img_to_array(img)
     
-    # --- 1. İşlem: Rotate + Blur ---
+    # --- 1. process: Rotate + Blur ---
     rot_blur_img, angle = apply_rotate_and_blur(original_array)
     save_image(rot_blur_img, os.path.join(target_dir, f"v1_rot{angle}_blur_{base_name}"))
     
-    # --- 2. İşlem: Dark ---
+    # --- 2. process: Dark ---
     dark_img = apply_dark(original_array, factor=dark_factor)
     save_image(dark_img, os.path.join(target_dir, f"v2_dark_{base_name}"))
     
-    # --- 3. İşlem: Bright ---
+    # --- 3. process: Bright ---
     bright_img = apply_bright(original_array, factor=bright_factor)
     save_image(bright_img, os.path.join(target_dir, f"v3_bright_{base_name}"))
     
