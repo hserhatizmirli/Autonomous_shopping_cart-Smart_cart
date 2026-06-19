@@ -103,7 +103,7 @@ def urunu_degerlendir_sessiz(agirlik, tespitler):
     en_iyi_isim = en_iyi_tahmin['name']
     en_iyi_guven = en_iyi_tahmin['conf']
 
-    if en_iyi_guven >= 0.85: return True, en_iyi_isim
+    if en_iyi_guven >= 0.80: return True, en_iyi_isim
 
     for aday in tespitler[:3]:
         aday_isim = aday['name']
