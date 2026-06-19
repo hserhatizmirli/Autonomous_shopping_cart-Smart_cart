@@ -2,13 +2,18 @@ import cv2
 import os
 from ultralytics import YOLO
 from multiprocessing import freeze_support
+# Kodun bulunduğu klasörü (Smart shopping cart) otomatik olarak bulur / The code automatically finds the folder (Smart shopping cart)
+MEVCUT_KLASOR = os.path.dirname(os.path.abspath(__file__)) 
 
 def model_train(model):
+    data_yolu = os.path.join(MEVCUT_KLASOR, "Dataset", "data.yaml")
+    project_yolu = os.path.join(MEVCUT_KLASOR, "runs", "detect")
+
     model.train(
-        data=r'/Smart shopping cart/Dataset/data.yaml', # Veri seti dosyasının yolu (hata alırsanız tam yolu gireiblirsiniz.) / The path to the dataset file (if you get an error, you can enter the full path.)
+        data=data_yolu, 
         epochs=250,
         name='yolo11',
-        project=r'/Smart shopping cart/runs/detect/', # Modelin kaydedileceği klasör (hata alırsanız tam yolu gireiblirsiniz.) / The folder where the model will be saved (if you get an error, you can enter the full path.)
+        project=project_yolu, 
         exist_ok=True,  
         batch=8,
         workers=0,
@@ -17,10 +22,10 @@ def model_train(model):
     )
 
 def kamera():
-    best_pt = r'/Smart shopping cart/YOLO/runs/detect/yolo11/weights/best.pt' # Eğitilmiş modelin yolu (hata alırsanız tam yolu gireiblirsiniz.) / The path to the trained model (if you get an error, you can enter the full path.)
+    best_pt = os.path.join(MEVCUT_KLASOR, "YOLO", "runs", "detect", "yolo11", "weights", "best.pt") # Eğitilmiş modelin yolu (hata alırsanız tam yolu gireiblirsiniz.) / The path to the trained model (if you get an error, you can enter the full path.)
     
     if not os.path.exists(best_pt):
-        print("Eğitilmiş model bulunamadı!")
+        print(f"Eğitilmiş model bulunamadı! Aranan yol: {best_pt}")
         return
     
     model = YOLO(best_pt)
@@ -35,7 +40,7 @@ def kamera():
         return
 
     print("Kamera çalışıyor. Çıkmak için 'q'")
-    print("Ayarlar: conf=0.85, iou=0.3 (hassasiyet artırıldı)")
+    print("Ayarlar: conf=0.70, iou=0.3 (hassasiyet artırıldı)")
     
     while True:
         ret, frame = cap.read()
@@ -70,8 +75,7 @@ def kamera():
 
 if __name__ == '__main__':
     freeze_support()
-    # 
-    model = YOLO(r'/Smart shopping cart/YOLO/runs/detect/yolo11/weights/best.pt') 
+    model_path = os.path.join(MEVCUT_KLASOR, "YOLO", "runs", "detect", "yolo11", "weights", "best.pt")
     # sadece birini kullanmak için yorum satırlarını açıp kapatabilirsiniz / Uncomment one of the following lines to use either training or camera
-    model_train(model)  # Eğitimi başlat / Start training 
+    model_train(model_path)  # Eğitimi başlat / Start training 
     kamera() # Kamerayı başlat / Start the camera

@@ -1,12 +1,22 @@
-import tensorflow as tf
 import os
+import tensorflow as tf
 import glob
 import random
 import shutil
 
-# saf verilerin ve yeni oluşacak veri çoğaltımı klasörlerinin yolları / The paths to the original data and augmented data folders
-source_dir = r'\Smart shopping cart\YOLO Data Augmentation and Real-Time Testing\raw data'
-target_dir = r'\Smart shopping cart\YOLO Data Augmentation and Real-Time Testing\Aug data'
+# --- GEREKSİZ UYARILARI SUSTURMA / SILENCE UNNECESSARY DOLLARS ---
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
+# augmentation.py dosyasının bulunduğu klasörü otomatik bulur / Finds the folder where augmentation.py is located automatically
+MEVCUT_KLASOR = os.path.dirname(os.path.abspath(__file__))
+
+# Hemen yanındaki "raw data" ve "Aug data" klasörlerine kilitlenir / Locks onto the "raw data" and "Aug data" folders right next to it
+source_dir = os.path.join(MEVCUT_KLASOR, "raw data")
+target_dir = os.path.join(MEVCUT_KLASOR, "Aug data")
+
+# Eğer raw data klasörü yanlışlıkla silindiyse kod çökmesin diye boş oluşturur / If the raw data folder is accidentally deleted, it creates an empty one to prevent code crash
+os.makedirs(source_dir, exist_ok=True)
 
 # --- TEMİZLİK: Hedef klasör varsa sil ve yeniden oluştur / Clean: If target folder exists, delete and recreate it ---
 if os.path.exists(target_dir):

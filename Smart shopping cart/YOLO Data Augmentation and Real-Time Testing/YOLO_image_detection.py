@@ -4,8 +4,11 @@ from ultralytics import YOLO
 
 def analyze_my_image_small():
     # Model yükleme / Load the model
-    # modelin tam yolunu girebilirsiniz. Örn: r'C:\path\to\your\model.pt' / You can enter the full path of the model. E.g.: r'C:\path\to\your\model.pt'
-    model_path = r'\Smart shopping cart\runs\detect\yolo11\weights\best.pt'
+    # 1. Kodun bulunduğu klasörü otomatik bulur / Automatically finds the folder where the code is located
+    MEVCUT_KLASOR = os.path.dirname(os.path.abspath(__file__))
+
+    # 2. İşletim sistemine (Windows/Mac/Linux) uygun şekilde dinamik model yolunu oluşturur / Dynamically creates the model path according to the operating system (Windows/Mac/Linux)
+    model_path = os.path.join(MEVCUT_KLASOR, "runs", "detect", "yolo11", "weights", "best.pt")
     
     if not os.path.exists(model_path):
         print(f"[✗] Model bulunamadı, pretrained kullanılıyor...")

@@ -6,11 +6,14 @@ import random
 from multiprocessing import freeze_support
 from flask import Flask, render_template, request, jsonify, Response
 import iyzipay
+import os
 
 # Kendi kodlarımızın modülleri / Our own code modules
 from yolo import YoloAnalyzer  
 from tarti import ScaleReader
 from barkod1 import barkod_oku
+
+MEVCUT_KLASOR = os.path.dirname(os.path.abspath(__file__))
 
 # =================================================================
 # 1. VERİTABANLARI VE AYARLAR / DATABASES AND SETTINGS
@@ -152,7 +155,7 @@ def donanim_dongusu_baslat():
     
     print("[1] Donanımlar Başlatılıyor...")
     # model yolunda eğer hata alırsanız tam halini yazın. / If you get an error in the model path, write the full path.
-    model_path = r"/Smart shopping cart/runs/detect/yolo11/weights/best.pt"
+    model_path = os.path.join(MEVCUT_KLASOR, "YOLO", "runs", "detect", "yolo11", "weights", "best.pt")
     
     try:
         yolo_analyzer = YoloAnalyzer(model_path)

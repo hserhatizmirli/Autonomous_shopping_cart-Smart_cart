@@ -13,7 +13,7 @@ secret_key = 'sandbox-Nprw1b'
 options = {
     'api_key': api_key,
     'secret_key': secret_key,
-    'base_url': 'https://sandbox-api.iyzipay.com'
+    'base_url': 'sandbox-api.iyzipay.com'
 }
 
 # Geçici bir veritabanı / Temporary database for the shopping cart

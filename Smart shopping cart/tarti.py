@@ -60,7 +60,7 @@ class ScaleReader:
             time.sleep(0.01) # CPU'yu yormamak için kısa bekleme / Short wait to avoid overloading the CPU
 
     def _check_stability(self):
-        """Son 5 ölçümün son 4'ünü kontrol ederek stabilitesini denetler."""
+        #Son 5 ölçümün son 4'ünü kontrol ederek stabilitesini denetler. / Checks the stability by examining the last 4 of the last 5 measurements.
         if len(self.readings) == 5:
             # Son 4 ölçümü al / Take the last 4 readings
             last_4 = list(self.readings)[1:5]
@@ -80,7 +80,7 @@ class ScaleReader:
                 self.readings.clear() 
 
     def stop(self):
-        """Sistemi ve portu güvenli şekilde kapatır."""
+        # Sistemi ve portu güvenli şekilde kapatır. / Safely shuts down the system and port.
         self.is_running = False
         if self.serial_conn and self.serial_conn.is_open:
             self.serial_conn.close()
